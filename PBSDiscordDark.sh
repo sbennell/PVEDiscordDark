@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/Weilbyte/PVEDiscordDark
+# https://github.com/sbennell/PBSDiscordDark
 
 umask 022
 
@@ -12,14 +12,14 @@ BOLD='\033[1m'
 REG='\033[0m'
 CHECKMARK='\033[0;32m\xE2\x9C\x94\033[0m'
 
-TEMPLATE_FILE="/usr/share/pve-manager/index.html.tpl"
+TEMPLATE_FILE="/usr/share/javascript/proxmox-backup/index.hbs"
 SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/"
 SCRIPTPATH="${SCRIPTDIR}$(basename "${BASH_SOURCE[0]}")"
 
 OFFLINEDIR="${SCRIPTDIR}offline"
 
 REPO=${REPO:-"sbennell/PVEDiscordDark"}
-DEFAULT_TAG="master"
+DEFAULT_TAG="PBS"
 TAG=${TAG:-$DEFAULT_TAG}
 BASE_URL="https://raw.githubusercontent.com/$REPO/$TAG"
 
@@ -66,8 +66,8 @@ if [ "$OFFLINE" = false ]; then
 fi
 #endregion Prerun checks
 
-PVEVersion=$(pveversion --verbose | grep pve-manager | cut -c 14- | cut -c -6) # Below pveversion pre-run check
-PVEVersionMajor=$(echo $PVEVersion | cut -d'-' -f1)
+PBSVersion=$(proxmox-backup-manager versions | grep proxmox-backup-server | cut -c 23- | cut -c -7) # Below pbsversion pre-run check
+PBSVersionMajor=$(echo $PBSVersion | cut -d'-' -f1)
 
 #region Helper functions
 function checkSupported {   
@@ -87,15 +87,15 @@ function checkSupported {
         local SUPPORTEDARR=($(echo "$SUPPORTED" | tr ',' '\n'))
         if ! (printf '%s\n' "${SUPPORTEDARR[@]}" | grep -q -P "$PVEVersionMajor"); then
             echo -e "${WARN}You might encounter issues because your version ($PVEVersionMajor) is not matching currently supported versions ($SUPPORTED)."
-            echo -e "If you do run into any issues on >newer< versions, please consider opening an issue at https://github.com/Weilbyte/PVEDiscordDark/issues.${REG}"
+            echo -e "If you do run into any issues on >newer< versions, please consider opening an issue at https://github.com/sbennell/PVEDiscordDark/issues.${REG}"
         fi
     fi
 }
 
 function isInstalled {
-    if (grep -Fq "<link rel='stylesheet' type='text/css' href='/pve2/css/dd_style.css'>" $TEMPLATE_FILE &&
-        grep -Fq "<script type='text/javascript' src='/pve2/js/dd_patcher.js'></script>" $TEMPLATE_FILE &&
-        [ -f "/usr/share/pve-manager/css/dd_style.css" ] && [ -f "/usr/share/pve-manager/js/dd_patcher.js" ]); then 
+    if (grep -Fq "<link rel='stylesheet' type='text/css' href='/css/dd_style.css'>" $TEMPLATE_FILE &&
+        grep -Fq "<script type='text/javascript' src='/js/dd_patcher.js'></script>" $TEMPLATE_FILE &&
+        [ -f "/usr/share/javascript/proxmox-backup/css/dd_style.css" ] && [ -f "/usr/share/javascript/proxmox-backup/js/dd_patcher.js" ]); then 
         true
     else 
         false
@@ -108,7 +108,7 @@ function isInstalled {
 function usage {
     if [ "$_silent" = false ]; then
         echo -e "Usage: $0 [OPTIONS...] {COMMAND}\n"
-        echo -e "Manages the PVEDiscordDark theme."
+        echo -e "Manages the PBSDiscordDark theme."
         echo -e "  -h --help            Show this help"
         echo -e "  -s --silent          Silent mode\n"
         echo -e "Commands:"
@@ -121,7 +121,7 @@ function usage {
         echo -e "  0                    OK"
         echo -e "  1                    Failure"
         echo -e "  2                    Already installed, OR not installed (when using install/uninstall commands)\n"
-        echo -e "Report issues at: <https://github.com/Weilbyte/PVEDiscordDark/issues>"
+        echo -e "Report issues at: <https://github.com/sbennell/PVEDiscordDark/issues>"
     fi
 }
 
@@ -133,10 +133,10 @@ function status {
         else
             echo -e "  Status:      ${RED}not present${REG}"
         fi
-        echo -e "  CSS:         $(sha256sum /usr/share/pve-manager/css/dd_style.css 2>/dev/null  || echo N/A)"
-        echo -e "  JS:          $(sha256sum /usr/share/pve-manager/js/dd_patcher.js 2>/dev/null  || echo N/A)\n"
-        echo -e "PVE"
-        echo -e "  Version:     $PVEVersion (major $PVEVersionMajor)\n"
+        echo -e "  CSS:         $(sha256sum /usr/share/javascript/proxmox-backup/css/dd_style.css 2>/dev/null  || echo N/A)"
+        echo -e "  JS:          $(sha256sum /usr/share/javascript/proxmox-backup/js/dd_patcher.js 2>/dev/null  || echo N/A)\n"
+        echo -e "PBS"
+        echo -e "  Version:     $PVEVersion (major $PBSVersionMajor)\n"
         echo -e "Utility hash:  $(sha256sum $SCRIPTPATH 2>/dev/null  || echo N/A)"
         echo -e "Offline mode:  $OFFLINE"
     fi
@@ -156,24 +156,24 @@ function install {
         if [ "$_silent" = false ]; then echo -e "${CHECKMARK} Downloading stylesheet"; fi
 
         if [ "$OFFLINE" = false ]; then
-            curl -s $BASE_URL/PVEDiscordDark/sass/PVEDiscordDark.css > /usr/share/pve-manager/css/dd_style.css
+            curl -s $BASE_URL/PBSDiscordDark/sass/PBSDiscordDark.css > /usr/share/javascript/proxmox-backup/css/dd_style.css
         else
-            cp "$OFFLINEDIR/PVEDiscordDark/sass/PVEDiscordDark.css" /usr/share/pve-manager/css/dd_style.css
+            cp "$OFFLINEDIR/PBSDiscordDark/sass/PBSDiscordDark.css" /usr/share/javascript/proxmox-backup/css/dd_style.css
         fi
 
         if [ "$_silent" = false ]; then echo -e "${CHECKMARK} Downloading patcher"; fi
         if [ "$OFFLINE" = false ]; then
-            curl -s $BASE_URL/PVEDiscordDark/js/PVEDiscordDark.js > /usr/share/pve-manager/js/dd_patcher.js
+            curl -s $BASE_URL/PBSDiscordDark/js/PBSDiscordDark.js > /usr/share/javascript/proxmox-backup/js/dd_patcher.js
         else
-            cp "$OFFLINEDIR/PVEDiscordDark/js/PVEDiscordDark.js" /usr/share/pve-manager/js/dd_patcher.js
+            cp "$OFFLINEDIR/PBSDiscordDark/js/PBSDiscordDark.js" /usr/share/javascript/proxmox-backup/js/dd_patcher.js
         fi
 
         if [ "$_silent" = false ]; then echo -e "${CHECKMARK} Applying changes to template file"; fi
-        if !(grep -Fq "<link rel='stylesheet' type='text/css' href='/pve2/css/dd_style.css'>" $TEMPLATE_FILE); then
-            echo "<link rel='stylesheet' type='text/css' href='/pve2/css/dd_style.css'>" >> $TEMPLATE_FILE
+        if !(grep -Fq "<link rel='stylesheet' type='text/css' href='/css/dd_style.css'>" $TEMPLATE_FILE); then
+            echo "<link rel='stylesheet' type='text/css' href='/css/dd_style.css'>" >> $TEMPLATE_FILE
         fi 
-        if !(grep -Fq "<script type='text/javascript' src='/pve2/js/dd_patcher.js'></script>" $TEMPLATE_FILE); then
-            echo "<script type='text/javascript' src='/pve2/js/dd_patcher.js'></script>" >> $TEMPLATE_FILE
+        if !(grep -Fq "<script type='text/javascript' src='/js/dd_patcher.js'></script>" $TEMPLATE_FILE); then
+            echo "<script type='text/javascript' src='/js/dd_patcher.js'></script>" >> $TEMPLATE_FILE
         fi 
 
         if [ "$OFFLINE" = false ]; then
@@ -188,9 +188,9 @@ function install {
         for image in "${IMAGELISTARR[@]}"
         do
                 if [ "$OFFLINE" = false ]; then
-                    curl -s $BASE_URL/PVEDiscordDark/images/$image > /usr/share/pve-manager/images/$image
+                    curl -s $BASE_URL/PBSDiscordDark/images/$image > /usr/share/javascript/proxmox-backup/images/$image
                 else
-                    cp "$OFFLINEDIR/PVEDiscordDark/images/$image" /usr/share/pve-manager/images/$image
+                    cp "$OFFLINEDIR/PBSDiscordDark/images/$image" /usr/share/javascript/proxmox-backup/images/$image
                 fi
                 ((ITER++))
                 if [ "$_silent" = false ]; then echo -e "\e[1A\e[KDownloading images ($ITER/${#IMAGELISTARR[@]})"; fi
@@ -214,8 +214,8 @@ function uninstall {
         rm /usr/share/pve-manager/js/dd_patcher.js
 
         if [ "$_silent" = false ]; then echo -e "${CHECKMARK} Reverting changes to template file"; fi
-        sed -i "/<link rel='stylesheet' type='text\/css' href='\/pve2\/css\/dd_style.css'>/d" /usr/share/pve-manager/index.html.tpl
-        sed -i "/<script type='text\/javascript' src='\/pve2\/js\/dd_patcher.js'><\/script>/d" /usr/share/pve-manager/index.html.tpl
+        sed -i "/<link rel='stylesheet' type='text\/css' href='\/css\/dd_style.css'>/d" /usr/share/javascript/proxmox-backup/index.hbs
+        sed -i "/<script type='text\/javascript' src='\/js\/dd_patcher.js'><\/script>/d" /usr/share/javascript/proxmox-backup/index.hbs
 
         if [ "$_silent" = false ]; then echo -e "${CHECKMARK} Removing images"; fi
         rm /usr/share/pve-manager/images/dd_*
