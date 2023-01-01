@@ -17,7 +17,7 @@ const swapLogo = async function() {
 			node.parentElement.parentElement.style.background = COLOR_DARKER;
 			node.setAttribute('height', `${height}px`);
 			node.setAttribute('width', `${width}px`);
-			node.setAttribute('src', '/pve2/images/dd_logo.png');
+			node.setAttribute('src', '/images/dd_logo.png');
 		}
 	}
 	if (!found) {
@@ -44,16 +44,16 @@ function patchGaugeWidget() {
 };
 
 function patchBackupConfig() {
-	PVE.window.BackupConfig.prototype.items.style['background-color'] = COLOR_DARKER;
+	//PVE.window.BackupConfig.prototype.items.style['background-color'] = COLOR_DARKER;
 };
 
 function patchDiskSmartWindow() {
-	const target = PVE.DiskSmartWindow || Proxmox.window.DiskSmart;
+	const target = PBS.DiskSmartWindow || Proxmox.window.DiskSmart;
 	target.prototype.items[1].style['background-color'] = COLOR_DARKER;
 }
 
 function patchTFAEdit() {
-	if (PVE.window.TFAEdit) PVE.window.TFAEdit.prototype.items[0].items[0].items[1].style["background-color"] = 'transparent';
+	//if (PVE.window.TFAEdit) PVE.window.TFAEdit.prototype.items[0].items[0].items[1].style["background-color"] = 'transparent';
 }
 
 function patchCreateWidget() {
@@ -73,4 +73,4 @@ patchBackupConfig();
 patchDiskSmartWindow();
 patchTFAEdit();
 patchCreateWidget();
-console.log('PVEDiscordDark :: Patched');
+console.log('PBSDiscordDark :: Patched');
