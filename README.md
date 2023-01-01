@@ -13,12 +13,12 @@ The theme now runs its own JavaScript code which patches the colors for certain 
 The installation is done via the CLI utility. Run the following commands on the PVE node serving the Web UI:  Clearing browser cache is necessary to see the changes.
 
 ```
-~# wget https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh
+~# wget https://raw.githubusercontent.com/sbennell/PVEDiscordDark/PBS/PVEDiscordDark.sh
 ~# bash PVEDiscordDark.sh install
 ```
 Or this oneliner
 ```
-bash <(curl -s https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh ) install
+bash <(curl -s https://raw.githubusercontent.com/sbennell/PVEDiscordDark/PBS/PVEDiscordDark.sh ) install
 ```
 
 Note that you will need to run the install command every time `pve-manager` is updated (i.e. after every Proxmox update)
@@ -43,7 +43,7 @@ You can find a zip containing the installer and offline folder under the artifac
 ## Contributors
 Thanks to everybody who contributed to this project, and additional thanks to [Crinisus](https://github.com/crinisus) for catching bugs for the rewrite!
 
-<a href="https://github.com/weilbyte/pvediscorddark/graphs/contributors">
+<a href="https://github.com/sbennell/PVEDiscordDark/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=weilbyte/pvediscorddark" />
 </a>
 
